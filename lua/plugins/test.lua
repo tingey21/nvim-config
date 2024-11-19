@@ -36,6 +36,7 @@ return {
         },
         dap_go_enabled = true,
       }
+      opts.adapters["neotest-plenary"] = {}
     end,
     config = function(_, opts)
       if opts.adapters then
@@ -63,7 +64,16 @@ return {
         end
         opts.adapters = adapters
       end
+      -- Additional Lua-specific configuration
+      opts.discovery = opts.discovery or {}
+      opts.discovery.enabled = true
+      opts.discovery.filter_dir = function(name, rel_path, root)
+        return name ~= "node_modules"
+      end
 
+      -- Configure Lua test patterns
+      opts.lua = opts.lua or {}
+      opts.lua.test_pattern = ".*_spec.lua"
       require("neotest").setup(opts)
     end,
     keys = {
