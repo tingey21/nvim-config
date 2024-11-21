@@ -7,7 +7,7 @@ return {
       "nvim-lua/plenary.nvim",
       "antoinemadec/FixCursorHold.nvim",
       "nvim-treesitter/nvim-treesitter",
-
+      "olimorris/neotest-phpunit",
       "nvim-neotest/neotest-plenary",
       "nvim-neotest/neotest-vim-test",
 
@@ -26,6 +26,7 @@ return {
     },
     opts = function(_, opts)
       opts.adapters = opts.adapters or {}
+      opts.configurations = opts.configurations or {}
       opts.adapters["neotest-golang"] = {
         go_test_args = {
           "-v",
@@ -37,6 +38,13 @@ return {
         dap_go_enabled = true,
       }
       opts.adapters["neotest-plenary"] = {}
+      opts.adapters["neotest-phpunit"] = {
+        phpunit_args = {
+          "--testdox",
+          "--stop-on-failure",
+          "--verbose",
+        },
+      }
     end,
     config = function(_, opts)
       if opts.adapters then
@@ -183,6 +191,32 @@ return {
           dap.listeners.before.event_exited["dapui_config"] = function()
             dapui.close({})
           end
+
+          dap.adapters.php = {
+            type = "executable",
+            command = "node",
+            args = {
+              os.getenv("HOME") .. "/.local/share/nvim/mason/packages/php-debug-adapter/extension/out/phpDebug.js",
+            },
+          }
+          dap.configurations.php = {
+            {
+              type = "php",
+              request = "launch",
+              name = "Listen for Xdebug in Docker Compose",
+              port = 9003,
+              pathMappings = function()
+                local cwd = vim.fn.getcwd()
+                return {
+                  ["/var/www/html"] = cwd,
+                  ["/var/www/html/app"] = cwd .. "/app",
+                  ["/var/www/html/public"] = cwd .. "/public",
+                }
+              end,
+              log = true,
+              hostname = "0.0.0.0",
+            },
+          }
         end,
         keys = {
           {
