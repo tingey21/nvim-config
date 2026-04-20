@@ -10,7 +10,7 @@ return {
       "olimorris/neotest-phpunit",
       "nvim-neotest/neotest-plenary",
       "nvim-neotest/neotest-vim-test",
-
+      "nvim-neotest/neotest-python",
       "nvim-neotest/nvim-nio",
 
       {
@@ -38,6 +38,18 @@ return {
         dap_go_enabled = true,
       }
       opts.adapters["neotest-plenary"] = {}
+      opts.adapters["neotest-python"] = {
+        dap = { justMyCode = false },
+        args = { "-s" },
+        runner = "pytest",
+        python = "uv run pytest",
+        pytest_discover_instances = true,
+        -- Uncomment and customize if needed:
+        -- is_test_file = function(file_path)
+        --   return file_path:match("test_.*%.py$") ~= nil
+        -- end,
+      }
+
       opts.adapters["neotest-phpunit"] = {
         phpunit_args = {
           "--testdox",

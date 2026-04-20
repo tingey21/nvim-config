@@ -1,6 +1,17 @@
--- bootstrap lazy.nvim, LazyVim and your plugins
-require("config.lazy")
-require("Comment").setup()
+require("config.options")
+require("config.keymaps")
+require("config.autocmds")
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git", "clone", "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable",
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
 vim.opt.wrap = true
 vim.g.clipboard = {
   name = 'OSC 52',
@@ -32,7 +43,4 @@ vim.keymap.set({ 'n', 'v' }, 'y', '"+y')
 vim.keymap.set({ 'n', 'v' }, 'Y', '"+Y')
 vim.keymap.set('n', 'yy', '"+yy')
 
-require("focus").setup()
-require("lspconfig").omnisharp.setup({
-  cmd = { "dotnet", "/Users/master/Downloads/omnisharp-osx-arm64-net6.0/OmniSharp.dll" },
-})
+require("lazy").setup("plugins")
